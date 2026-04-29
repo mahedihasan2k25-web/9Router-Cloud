@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardSkeleton } from "@/shared/components";
 import { CLI_TOOLS } from "@/shared/constants/cliTools";
 import { getModelsByProviderId, PROVIDER_ID_TO_ALIAS } from "@/shared/constants/models";
-import { ClaudeToolCard, CodexToolCard, DroidToolCard, OpenClawToolCard, HermesToolCard, DefaultToolCard, OpenCodeToolCard, MitmLinkCard } from "./components";
+import { ClaudeToolCard, MitmLinkCard } from "./components";
 import { MITM_TOOLS } from "@/shared/constants/cliTools";
 
 const CLOUD_URL = process.env.NEXT_PUBLIC_CLOUD_URL;
@@ -12,11 +12,6 @@ const CLOUD_URL = process.env.NEXT_PUBLIC_CLOUD_URL;
 
 const STATUS_ENDPOINTS = {
   claude: "/api/cli-tools/claude-settings",
-  codex: "/api/cli-tools/codex-settings",
-  opencode: "/api/cli-tools/opencode-settings",
-  droid: "/api/cli-tools/droid-settings",
-  openclaw: "/api/cli-tools/openclaw-settings",
-  hermes: "/api/cli-tools/hermes-settings",
 };
 
 export default function CLIToolsPageClient({ machineId }) {
@@ -158,33 +153,23 @@ export default function CLIToolsPageClient({ machineId }) {
       apiKeys,
     };
 
-    switch (toolId) {
-      case "claude":
-        return (
-          <ClaudeToolCard
-            key={toolId}
-            {...commonProps}
-            activeProviders={getActiveProviders()}
-            modelMappings={modelMappings[toolId] || {}}
-            onModelMappingChange={(alias, target) => handleModelMappingChange(toolId, alias, target)}
-            hasActiveProviders={hasActiveProviders}
-            cloudEnabled={cloudEnabled}
-            initialStatus={toolStatuses.claude}
-          />
-        );
-      case "codex":
-        return <CodexToolCard key={toolId} {...commonProps} activeProviders={getActiveProviders()} cloudEnabled={cloudEnabled} initialStatus={toolStatuses.codex} />;
-      case "opencode":
-        return <OpenCodeToolCard key={toolId} {...commonProps} activeProviders={getActiveProviders()} cloudEnabled={cloudEnabled} initialStatus={toolStatuses.opencode} />;
-      case "droid":
-        return <DroidToolCard key={toolId} {...commonProps} activeProviders={getActiveProviders()} hasActiveProviders={hasActiveProviders} cloudEnabled={cloudEnabled} initialStatus={toolStatuses.droid} />;
-      case "openclaw":
-        return <OpenClawToolCard key={toolId} {...commonProps} activeProviders={getActiveProviders()} hasActiveProviders={hasActiveProviders} cloudEnabled={cloudEnabled} initialStatus={toolStatuses.openclaw} />;
-      case "hermes":
-        return <HermesToolCard key={toolId} {...commonProps} activeProviders={getActiveProviders()} hasActiveProviders={hasActiveProviders} cloudEnabled={cloudEnabled} initialStatus={toolStatuses.hermes} />;
-      default:
-        return <DefaultToolCard key={toolId} toolId={toolId} {...commonProps} activeProviders={getActiveProviders()} cloudEnabled={cloudEnabled} tunnelEnabled={tunnelEnabled} />;
+    // Only Claude Code is supported
+    if (toolId === "claude") {
+      return (
+        <ClaudeToolCard
+          key={toolId}
+          {...commonProps}
+          activeProviders={getActiveProviders()}
+          modelMappings={modelMappings[toolId] || {}}
+          onModelMappingChange={(alias, target) => handleModelMappingChange(toolId, alias, target)}
+          hasActiveProviders={hasActiveProviders}
+          cloudEnabled={cloudEnabled}
+          initialStatus={toolStatuses.claude}
+        />
+      );
     }
+
+    return null;
   };
 
   const regularTools = Object.entries(CLI_TOOLS);
